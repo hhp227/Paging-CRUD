@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.hhp227.paging_crud.api.PostService
+import com.hhp227.paging_crud.data.PostDao
 import com.hhp227.paging_crud.data.PostRepository
 import com.hhp227.paging_crud.viewmodel.CreatePostViewModel
 import com.hhp227.paging_crud.viewmodel.PostViewModel
@@ -16,7 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 object InjectorUtils {
-    private fun getPostRepository() = PostRepository.getInstance(PostService.create())
+    private fun getPostRepository() = PostRepository.getInstance(PostService.create(), PostDao)
 
     fun providePostViewModelFactory(): ViewModelProvider.Factory {
         return viewModelFactory {

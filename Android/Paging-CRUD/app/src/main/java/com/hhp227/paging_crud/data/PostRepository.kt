@@ -1,5 +1,8 @@
 package com.hhp227.paging_crud.data
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.hhp227.paging_crud.api.PostService
 import com.hhp227.paging_crud.model.ListItem
 import com.hhp227.paging_crud.model.Resource
@@ -7,23 +10,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 
-class PostRepository(private val postService: PostService) {
-    // TODO 스크롤이 하단에 도달시 offset으로 다음페이지를 불러오는 로직은 추후 구현
-    fun getPostList(groupId: Int, offset: Int): Flow<Resource<out List<ListItem.Post>>> = flow {
-        try {
-            val response = postService.getPostList(groupId, offset, LOAD_SIZE)
-
-            if (!response.error) {
-                requireNotNull(response.data)
-                emit(Resource.Success(response.data))
-            } else {
-                emit(Resource.Error(response.message!!))
-            }
-        } catch (e: Exception) {
-            emit(Resource.Error(e.message ?: "An unexpected error occured"))
-        }
+class PostRepository(
+    private val postService: PostService,
+    private val localDataSource: PostDao
+) {
+    fun getPostList(groupId: Int): Flow<PagingData<ListItem.Post>> {
+        return Pager(
+            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE),
+            pagingSourceFactory = { PostPagingSource(postService, localDataSource, groupId) },
+        ).flow
     }
-        .onStart { emit(Resource.Loading()) }
 
     fun addPost(apiKey: String, groupId: Int, text: String): Flow<Resource<Int>> = flow {
         try {
@@ -46,6 +42,7 @@ class PostRepository(private val postService: PostService) {
             val response = postService.removePost(apiKey, postId)
 
             if (!response.error) {
+                localDataSource.deletePost(postId)
                 emit(Resource.Success(true))
             } else {
                 emit(Resource.Error(response.message!!, false))
@@ -56,14 +53,18 @@ class PostRepository(private val postService: PostService) {
     }
         .onStart { emit(Resource.Loading()) }
 
+    fun clearCache(groupId: Int) {
+        localDataSource.deleteAll(groupId)
+    }
+
     companion object {
         const val LOAD_SIZE = 10
 
         @Volatile private var instance: PostRepository? = null
 
-        fun getInstance(postService: PostService) =
+        fun getInstance(postService: PostService, postDao: PostDao) =
             instance ?: synchronized(this) {
-                instance ?: PostRepository(postService).also { instance = it }
+                instance ?: PostRepository(postService, postDao).also { instance = it }
             }
     }
 }
