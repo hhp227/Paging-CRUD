@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hhp227/Jetpack-Paging-for-SwiftUI.git",
       "state" : {
-        "revision" : "0eefbc193e327a4eb2e4d85e8c0ba9af8286e50c",
-        "version" : "0.2.9"
+        "branch" : "main",
+        "revision" : "bd3c7c312d7a7c5c58f7af5d0afc66774c88176c"
       }
     }
   ],

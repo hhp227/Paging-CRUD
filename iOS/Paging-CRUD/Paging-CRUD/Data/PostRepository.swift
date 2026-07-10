@@ -4,33 +4,23 @@
 //
 
 import Foundation
+import Combine
+import Paging
 
 final class PostRepository {
     private let postService: PostService
 
-    private init(postService: PostService) {
+    private let localDataSource: PostDao
+
+    private init(postService: PostService, localDataSource: PostDao) {
         self.postService = postService
+        self.localDataSource = localDataSource
     }
 
-    // TODO 스크롤이 하단에 도달시 offset으로 다음페이지를 불러오는 로직은 추후 구현
-    func getPostList(groupId: Int, offset: Int) -> AsyncStream<Resource<[ListItem.Post]>> {
-        AsyncStream { continuation in
-            Task {
-                continuation.yield(.loading())
-                do {
-                    let response = try await postService.getPostList(groupId: groupId, offset: offset, loadSize: Self.loadSize)
-
-                    if !response.error, let data = response.data {
-                        continuation.yield(.success(data))
-                    } else {
-                        continuation.yield(.error(response.message ?? "An unexpected error occured"))
-                    }
-                } catch {
-                    continuation.yield(.error(error.localizedDescription))
-                }
-                continuation.finish()
-            }
-        }
+    func getPostList(groupId: Int) -> AnyPublisher<PagingData<ListItem.Post>, Never> {
+        return Pager(PagingConfig(pageSize: Self.loadSize, enablePlaceholders: false, initialLoadSize: Self.loadSize)) {
+            PostPagingSource(postService: self.postService, postDao: self.localDataSource, groupId: groupId)
+        }.publisher
     }
 
     func addPost(apiKey: String, groupId: Int, text: String) -> AsyncStream<Resource<Int>> {
@@ -61,6 +51,7 @@ final class PostRepository {
                     let response = try await postService.removePost(apiKey: apiKey, postId: postId)
 
                     if !response.error {
+                        localDataSource.deletePost(postId)
                         continuation.yield(.success(true))
                     } else {
                         continuation.yield(.error(response.message ?? "An unexpected error occured", false))
@@ -73,7 +64,11 @@ final class PostRepository {
         }
     }
 
+    func clearCache(groupId: Int) {
+        localDataSource.deleteAll(groupId)
+    }
+
     static let loadSize = 10
 
-    static let shared = PostRepository(postService: PostService.create())
+    static let shared = PostRepository(postService: PostService.create(), localDataSource: PostDao.shared)
 }
