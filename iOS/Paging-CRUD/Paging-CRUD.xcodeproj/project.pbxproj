@@ -1,0 +1,577 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		0A83BFE93001341700CD633D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A83BFD03001341400CD633D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A83BFD73001341400CD633D;
+			remoteInfo = "Paging-CRUD";
+		};
+		0A83BFF33001341700CD633D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A83BFD03001341400CD633D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A83BFD73001341400CD633D;
+			remoteInfo = "Paging-CRUD";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A83BFD83001341400CD633D /* Paging-CRUD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Paging-CRUD.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A83BFE83001341700CD633D /* Paging-CRUDTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Paging-CRUDTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A83BFF23001341700CD633D /* Paging-CRUDUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Paging-CRUDUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0A83BFDA3001341400CD633D /* Paging-CRUD */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Paging-CRUD";
+			sourceTree = "<group>";
+		};
+		0A83BFEB3001341700CD633D /* Paging-CRUDTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Paging-CRUDTests";
+			sourceTree = "<group>";
+		};
+		0A83BFF53001341700CD633D /* Paging-CRUDUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Paging-CRUDUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0A83BFD53001341400CD633D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A83BFE53001341700CD633D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A83BFEF3001341700CD633D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A83BFCF3001341400CD633D = {
+			isa = PBXGroup;
+			children = (
+				0A83BFDA3001341400CD633D /* Paging-CRUD */,
+				0A83BFEB3001341700CD633D /* Paging-CRUDTests */,
+				0A83BFF53001341700CD633D /* Paging-CRUDUITests */,
+				0A83BFD93001341400CD633D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0A83BFD93001341400CD633D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A83BFD83001341400CD633D /* Paging-CRUD.app */,
+				0A83BFE83001341700CD633D /* Paging-CRUDTests.xctest */,
+				0A83BFF23001341700CD633D /* Paging-CRUDUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0A83BFD73001341400CD633D /* Paging-CRUD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A83BFFC3001341700CD633D /* Build configuration list for PBXNativeTarget "Paging-CRUD" */;
+			buildPhases = (
+				0A83BFD43001341400CD633D /* Sources */,
+				0A83BFD53001341400CD633D /* Frameworks */,
+				0A83BFD63001341400CD633D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0A83BFDA3001341400CD633D /* Paging-CRUD */,
+			);
+			name = "Paging-CRUD";
+			packageProductDependencies = (
+			);
+			productName = "Paging-CRUD";
+			productReference = 0A83BFD83001341400CD633D /* Paging-CRUD.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0A83BFE73001341700CD633D /* Paging-CRUDTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A83BFFF3001341700CD633D /* Build configuration list for PBXNativeTarget "Paging-CRUDTests" */;
+			buildPhases = (
+				0A83BFE43001341700CD633D /* Sources */,
+				0A83BFE53001341700CD633D /* Frameworks */,
+				0A83BFE63001341700CD633D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A83BFEA3001341700CD633D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0A83BFEB3001341700CD633D /* Paging-CRUDTests */,
+			);
+			name = "Paging-CRUDTests";
+			packageProductDependencies = (
+			);
+			productName = "Paging-CRUDTests";
+			productReference = 0A83BFE83001341700CD633D /* Paging-CRUDTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0A83BFF13001341700CD633D /* Paging-CRUDUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A83C0023001341700CD633D /* Build configuration list for PBXNativeTarget "Paging-CRUDUITests" */;
+			buildPhases = (
+				0A83BFEE3001341700CD633D /* Sources */,
+				0A83BFEF3001341700CD633D /* Frameworks */,
+				0A83BFF03001341700CD633D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A83BFF43001341700CD633D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0A83BFF53001341700CD633D /* Paging-CRUDUITests */,
+			);
+			name = "Paging-CRUDUITests";
+			packageProductDependencies = (
+			);
+			productName = "Paging-CRUDUITests";
+			productReference = 0A83BFF23001341700CD633D /* Paging-CRUDUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0A83BFD03001341400CD633D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					0A83BFD73001341400CD633D = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					0A83BFE73001341700CD633D = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 0A83BFD73001341400CD633D;
+					};
+					0A83BFF13001341700CD633D = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 0A83BFD73001341400CD633D;
+					};
+				};
+			};
+			buildConfigurationList = 0A83BFD33001341400CD633D /* Build configuration list for PBXProject "Paging-CRUD" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 0A83BFCF3001341400CD633D;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0A83C0053001368F00CD633D /* XCRemoteSwiftPackageReference "Jetpack-Paging-for-SwiftUI" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0A83BFD93001341400CD633D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0A83BFD73001341400CD633D /* Paging-CRUD */,
+				0A83BFE73001341700CD633D /* Paging-CRUDTests */,
+				0A83BFF13001341700CD633D /* Paging-CRUDUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0A83BFD63001341400CD633D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A83BFE63001341700CD633D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A83BFF03001341700CD633D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A83BFD43001341400CD633D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A83BFE43001341700CD633D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A83BFEE3001341700CD633D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0A83BFEA3001341700CD633D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A83BFD73001341400CD633D /* Paging-CRUD */;
+			targetProxy = 0A83BFE93001341700CD633D /* PBXContainerItemProxy */;
+		};
+		0A83BFF43001341700CD633D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A83BFD73001341400CD633D /* Paging-CRUD */;
+			targetProxy = 0A83BFF33001341700CD633D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0A83BFFA3001341700CD633D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		0A83BFFB3001341700CD633D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0A83BFFD3001341700CD633D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Paging-CRUD/Preview Content\"";
+				DEVELOPMENT_TEAM = W345THX6Y6;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hhp227.Paging-CRUD";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0A83BFFE3001341700CD633D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Paging-CRUD/Preview Content\"";
+				DEVELOPMENT_TEAM = W345THX6Y6;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hhp227.Paging-CRUD";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		0A83C0003001341700CD633D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W345THX6Y6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hhp227.Paging-CRUDTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Paging-CRUD.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Paging-CRUD";
+			};
+			name = Debug;
+		};
+		0A83C0013001341700CD633D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W345THX6Y6;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hhp227.Paging-CRUDTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Paging-CRUD.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Paging-CRUD";
+			};
+			name = Release;
+		};
+		0A83C0033001341700CD633D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W345THX6Y6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hhp227.Paging-CRUDUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Paging-CRUD";
+			};
+			name = Debug;
+		};
+		0A83C0043001341700CD633D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W345THX6Y6;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.hhp227.Paging-CRUDUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Paging-CRUD";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A83BFD33001341400CD633D /* Build configuration list for PBXProject "Paging-CRUD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A83BFFA3001341700CD633D /* Debug */,
+				0A83BFFB3001341700CD633D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A83BFFC3001341700CD633D /* Build configuration list for PBXNativeTarget "Paging-CRUD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A83BFFD3001341700CD633D /* Debug */,
+				0A83BFFE3001341700CD633D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A83BFFF3001341700CD633D /* Build configuration list for PBXNativeTarget "Paging-CRUDTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A83C0003001341700CD633D /* Debug */,
+				0A83C0013001341700CD633D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A83C0023001341700CD633D /* Build configuration list for PBXNativeTarget "Paging-CRUDUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A83C0033001341700CD633D /* Debug */,
+				0A83C0043001341700CD633D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		0A83C0053001368F00CD633D /* XCRemoteSwiftPackageReference "Jetpack-Paging-for-SwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hhp227/Jetpack-Paging-for-SwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.9;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+	};
+	rootObject = 0A83BFD03001341400CD633D /* Project object */;
+}
