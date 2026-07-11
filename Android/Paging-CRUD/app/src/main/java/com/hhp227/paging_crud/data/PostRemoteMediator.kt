@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.hhp227.paging_crud.api.PostService
 import com.hhp227.paging_crud.model.ListItem
+import kotlinx.coroutines.delay
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -20,7 +21,11 @@ class PostRemoteMediator(
             val offset = when (loadType) {
                 LoadType.REFRESH -> 0
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-                LoadType.APPEND -> postDao.getCount(groupId)
+                LoadType.APPEND -> {
+                    // 하단 도달시 로딩 인디케이터가 잠시 보이도록 의도적으로 지연
+                    delay(1000)
+                    postDao.getCount(groupId)
+                }
             }
             val loadSize = if (loadType == LoadType.REFRESH) state.config.initialLoadSize else state.config.pageSize
             val response = postService.getPostList(groupId, offset, loadSize)
