@@ -6,6 +6,8 @@
 import Foundation
 import Paging
 
+// 표시 목록은 항상 캐시의 0번부터 시작하는 프리픽스라서 무효화가 뷰포트 위쪽 행을 건드리지 않고
+// (스크롤 유지), prepend는 발생하지 않는다. 아래로는 APPEND가 페이지 단위로 이어 붙인다
 final class PostLocalPagingSource: PagingSource<Int, ListItem.Post> {
     private let postDao: PostDao
 
@@ -30,39 +32,32 @@ final class PostLocalPagingSource: PagingSource<Int, ListItem.Post> {
         if params is LoadParams<Int>.Append<Int> {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
-        let key = params.getKey() ?? 0
         let count = postDao.getCount(groupId)
         let offset: Int
-        let limit: Int
+        let end: Int
 
         switch params {
         case is LoadParams<Int>.Prepend<Int>:
-            offset = max(0, key - params.loadSize)
-            limit = min(key, params.loadSize)
-        case is LoadParams<Int>.Refresh<Int>:
-            offset = key >= count ? max(0, count - params.loadSize) : key
-            limit = params.loadSize
+            return LoadResult<Int, ListItem.Post>.Page(data: [], prevKey: nil, nextKey: nil)
+        case is LoadParams<Int>.Append<Int>:
+            offset = params.getKey() ?? 0
+            end = min(count, offset + params.loadSize)
         default:
-            offset = key
-            limit = params.loadSize
+            offset = 0
+            end = min(count, params.getKey() ?? params.loadSize)
         }
-        let data = postDao.getPostList(groupId, offset, offset + limit)
+        let data = postDao.getPostList(groupId, offset, end)
         return LoadResult<Int, ListItem.Post>.Page(
             data: data,
-            prevKey: offset <= 0 || data.isEmpty ? nil : offset,
-            nextKey: data.isEmpty || offset + data.count >= count ? nil : offset + data.count
+            prevKey: nil,
+            nextKey: data.isEmpty || end >= count ? nil : end
         )
     }
 
     override func getRefreshKey(state: PagingState<Int, ListItem.Post>) -> Int? {
-        // enablePlaceholders = false라 anchorPosition은 DAO 오프셋이 아닌 표시 인덱스이므로 페이지 기준으로 계산한다.
-        // 앵커(마지막 접근 = 뷰포트 최하단)보다 한 페이지 위에서 시작해 refresh 윈도우(3페이지)가
-        // 뷰포트 전체를 덮게 해서, 무효화 후에도 보이는 아이템들의 key가 유지되어 스크롤이 밀리지 않는다
-        guard let anchorPosition = state.anchorPosition else {
-            return nil
-        }
-        let pageStart = state.closestPageToPosition(anchorPosition)?.prevKey ?? 0
+        // 무효화 전에 표시 중이던 프리픽스 전체를 그대로 다시 표시한다 (key = 표시 끝 오프셋)
+        let presentedCount = state.pages.reduce(0) { $0 + $1.data.count }
 
-        return max(0, pageStart - state.config.pageSize)
+        return presentedCount > 0 ? presentedCount : nil
     }
 }
