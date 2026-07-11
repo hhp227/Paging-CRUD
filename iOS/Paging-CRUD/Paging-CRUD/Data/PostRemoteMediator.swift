@@ -30,8 +30,6 @@ final class PostRemoteMediator: RemoteMediator<Int, ListItem.Post> {
             case .prepend:
                 return .success(endOfPaginationReached: true)
             case .append:
-                // 하단 도달시 로딩 인디케이터가 잠시 보이도록 의도적으로 지연
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
                 offset = postDao.getCount(groupId)
             }
             let loadSize = loadType == .refresh ? state.config.initialLoadSize : state.config.pageSize

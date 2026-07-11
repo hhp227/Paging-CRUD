@@ -37,7 +37,8 @@ struct ContentView: View {
                                 }
                         }
                     }
-                    if lazyPagingItems.loadState.append is LoadState.Loading {
+                    // mediator가 있으면 combined append는 mediator 상태를 따르므로, 캐시 페이지 로딩(source)도 함께 본다
+                    if lazyPagingItems.loadState.append is LoadState.Loading || lazyPagingItems.loadState.source.append is LoadState.Loading {
                         HStack {
                             Spacer()
                             ProgressView()

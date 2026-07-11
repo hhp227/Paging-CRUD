@@ -26,6 +26,10 @@ final class PostLocalPagingSource: PagingSource<Int, ListItem.Post> {
     }
 
     override func load(params: LoadParams<Int>) async -> LoadResult<Int, ListItem.Post> {
+        // 하단 도달시 로딩 인디케이터가 1초 보인 뒤 다음 페이지가 나타나도록 의도적으로 지연
+        if params is LoadParams<Int>.Append<Int> {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
         let key = params.getKey() ?? 0
         let count = postDao.getCount(groupId)
         let offset: Int

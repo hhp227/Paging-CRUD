@@ -19,9 +19,10 @@ final class PostRepository {
 
     func getPostList(groupId: Int) -> AnyPublisher<PagingData<ListItem.Post>, Never> {
         // prefetchDistance = 1: 스크롤이 실제 바닥에 닿을 때만 다음 페이지 로드
-        // initialLoadSize = pageSize: 무효화 후 refresh 윈도우가 캐시 끝에 걸쳐 APPEND가 연쇄되는 것을 방지
+        // initialLoadSize = 2페이지: 무효화 후 refresh 윈도우가 앵커 페이지 + 아래 페이지를 함께 덮어
+        // 보던 내용이 버려지지 않고, 바닥에 머무를 때 APPEND가 연쇄되지 않는다
         return Pager(
-            PagingConfig(pageSize: Self.loadSize, prefetchDistance: 1, enablePlaceholders: false, initialLoadSize: Self.loadSize),
+            PagingConfig(pageSize: Self.loadSize, prefetchDistance: 1, enablePlaceholders: false, initialLoadSize: Self.loadSize * 2),
             nil,
             PostRemoteMediator(postService: postService, postDao: localDataSource, groupId: groupId)
         ) {
