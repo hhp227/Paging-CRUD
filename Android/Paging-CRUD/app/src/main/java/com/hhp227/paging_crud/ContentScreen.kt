@@ -43,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.hhp227.paging_crud.model.ListItem
 import com.hhp227.paging_crud.ui.theme.PagingCRUDTheme
 import com.hhp227.paging_crud.util.InjectorUtils
@@ -108,7 +109,10 @@ fun ContentScreen(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(count = lazyPagingItems.itemCount) { index ->
+                items(
+                    count = lazyPagingItems.itemCount,
+                    key = lazyPagingItems.itemKey { it.id }
+                ) { index ->
                     val post = lazyPagingItems[index]
 
                     if (post != null) {

@@ -23,7 +23,12 @@ object PostDao {
     }
 
     fun insertAll(key: Int, list: List<ListItem.Post>) {
-        cachedMap.computeIfAbsent(key) { mutableListOf() }.addAll(list)
+        cachedMap.compute(key) { _, cached ->
+            val posts = cached ?: mutableListOf()
+            val cachedIds = posts.map { it.id }.toSet()
+
+            posts.apply { addAll(list.filter { it.id !in cachedIds }) }
+        }
         notifyInvalidated()
     }
 

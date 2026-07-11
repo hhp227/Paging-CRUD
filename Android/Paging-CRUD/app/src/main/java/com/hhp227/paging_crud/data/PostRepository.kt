@@ -18,7 +18,7 @@ class PostRepository(
     @OptIn(ExperimentalPagingApi::class)
     fun getPostList(groupId: Int): Flow<PagingData<ListItem.Post>> {
         return Pager(
-            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE, initialLoadSize = LOAD_SIZE),
+            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE),
             remoteMediator = PostRemoteMediator(postService, localDataSource, groupId),
             pagingSourceFactory = { PostLocalPagingSource(localDataSource, groupId) },
         ).flow
