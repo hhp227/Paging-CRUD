@@ -3,6 +3,7 @@ package com.hhp227.paging_crud.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.hhp227.paging_crud.model.ListItem
+import kotlinx.coroutines.delay
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,6 +19,10 @@ class PostLocalPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListItem.Post> {
+        // 하단 도달시 로딩 인디케이터가 1초 보인 뒤 다음 페이지가 나타나도록 의도적으로 지연
+        if (params is LoadParams.Append) {
+            delay(1000)
+        }
         val key = params.key ?: 0
         val count = postDao.getCount(groupId)
         val offset = when (params) {

@@ -19,8 +19,9 @@ class PostRepository(
     fun getPostList(groupId: Int): Flow<PagingData<ListItem.Post>> {
         return Pager(
             // prefetchDistance = 1: 스크롤이 실제 바닥에 닿을 때만 다음 페이지 로드
-            // initialLoadSize = pageSize: 무효화 후 refresh 윈도우가 캐시 끝에 걸쳐 APPEND가 연쇄되는 것을 방지
-            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE, initialLoadSize = LOAD_SIZE, prefetchDistance = 1),
+            // initialLoadSize = 2페이지: 무효화 후 refresh 윈도우가 앵커 페이지 + 아래 페이지를 함께 덮어
+            // 보던 내용이 버려지지 않고, 바닥에 머무를 때 APPEND가 연쇄되지 않는다
+            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE, initialLoadSize = LOAD_SIZE * 2, prefetchDistance = 1),
             remoteMediator = PostRemoteMediator(postService, localDataSource, groupId),
             pagingSourceFactory = { PostLocalPagingSource(localDataSource, groupId) },
         ).flow
