@@ -4,9 +4,10 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.hhp227.paging_crud.model.ListItem
 import kotlinx.coroutines.delay
-import kotlin.math.max
 import kotlin.math.min
 
+// 표시 목록은 항상 캐시의 0번부터 시작하는 프리픽스라서 무효화가 뷰포트 위쪽 행을 건드리지 않고
+// (스크롤 유지), prepend는 발생하지 않는다. 아래로는 APPEND가 페이지 단위로 이어 붙인다
 class PostLocalPagingSource(
     private val postDao: PostDao,
     private val groupId: Int
@@ -23,33 +24,31 @@ class PostLocalPagingSource(
         if (params is LoadParams.Append) {
             delay(1000)
         }
-        val key = params.key ?: 0
         val count = postDao.getCount(groupId)
-        val offset = when (params) {
-            is LoadParams.Prepend -> max(0, key - params.loadSize)
-            is LoadParams.Refresh -> if (key >= count) max(0, count - params.loadSize) else key
-            else -> key
+        val offset: Int
+        val end: Int
+
+        when (params) {
+            is LoadParams.Prepend -> return LoadResult.Page(data = emptyList(), prevKey = null, nextKey = null)
+            is LoadParams.Append -> {
+                offset = params.key
+                end = min(count, offset + params.loadSize)
+            }
+            else -> {
+                offset = 0
+                end = min(count, params.key ?: params.loadSize)
+            }
         }
-        val limit = when (params) {
-            is LoadParams.Prepend -> min(key, params.loadSize)
-            else -> params.loadSize
-        }
-        val data = postDao.getPostList(groupId, offset, offset + limit)
+        val data = postDao.getPostList(groupId, offset, end)
         return LoadResult.Page(
             data = data,
-            prevKey = if (offset <= 0 || data.isEmpty()) null else offset,
-            nextKey = if (data.isEmpty() || offset + data.size >= count) null else offset + data.size
+            prevKey = null,
+            nextKey = if (data.isEmpty() || end >= count) null else end
         )
     }
 
     override fun getRefreshKey(state: PagingState<Int, ListItem.Post>): Int? {
-        // enablePlaceholders = false라 anchorPosition은 DAO 오프셋이 아닌 표시 인덱스이므로 페이지 기준으로 계산한다.
-        // 앵커(마지막 접근 = 뷰포트 최하단)보다 한 페이지 위에서 시작해 refresh 윈도우(3페이지)가
-        // 뷰포트 전체를 덮게 해서, 무효화 후에도 보이는 아이템들의 key가 유지되어 스크롤이 밀리지 않는다
-        return state.anchorPosition?.let { anchorPosition ->
-            val pageStart = state.closestPageToPosition(anchorPosition)?.prevKey ?: 0
-
-            max(0, pageStart - state.config.pageSize)
-        }
+        // 무효화 전에 표시 중이던 프리픽스 전체를 그대로 다시 표시한다 (key = 표시 끝 오프셋)
+        return state.pages.sumOf { it.data.size }.takeIf { it > 0 }
     }
 }
