@@ -43,10 +43,13 @@ class PostLocalPagingSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, ListItem.Post>): Int? {
-        // enablePlaceholders = false라 anchorPosition은 DAO 오프셋이 아닌 표시 인덱스이므로,
-        // 앵커가 속한 페이지의 시작 오프셋(prevKey)으로 페이지 정렬해서 리프레시한다
+        // enablePlaceholders = false라 anchorPosition은 DAO 오프셋이 아닌 표시 인덱스이므로 페이지 기준으로 계산한다.
+        // 앵커(마지막 접근 = 뷰포트 최하단)보다 한 페이지 위에서 시작해 refresh 윈도우(3페이지)가
+        // 뷰포트 전체를 덮게 해서, 무효화 후에도 보이는 아이템들의 key가 유지되어 스크롤이 밀리지 않는다
         return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey
+            val pageStart = state.closestPageToPosition(anchorPosition)?.prevKey ?: 0
+
+            max(0, pageStart - state.config.pageSize)
         }
     }
 }
