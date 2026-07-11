@@ -51,9 +51,11 @@ final class PostLocalPagingSource: PagingSource<Int, ListItem.Post> {
     }
 
     override func getRefreshKey(state: PagingState<Int, ListItem.Post>) -> Int? {
+        // enablePlaceholders = false라 anchorPosition은 DAO 오프셋이 아닌 표시 인덱스이므로,
+        // 앵커가 속한 페이지의 시작 오프셋(prevKey)으로 페이지 정렬해서 리프레시한다
         guard let anchorPosition = state.anchorPosition else {
             return nil
         }
-        return max(0, anchorPosition - state.config.initialLoadSize / 2)
+        return state.closestPageToPosition(anchorPosition)?.prevKey
     }
 }

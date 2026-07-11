@@ -42,7 +42,9 @@ final class PostDao {
 
     func insertAll(_ key: Int, _ list: [ListItem.Post]) {
         lock.lock()
-        cachedMap[key, default: []].append(contentsOf: list)
+        let cachedIds = Set(cachedMap[key, default: []].map { $0.id })
+
+        cachedMap[key, default: []].append(contentsOf: list.filter { !cachedIds.contains($0.id) })
         lock.unlock()
         notifyInvalidated()
     }

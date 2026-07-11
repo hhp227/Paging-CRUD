@@ -28,7 +28,7 @@ struct ContentView: View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
                 List {
-                    ForEach(lazyPagingItems) { post in
+                    ForEach(lazyPagingItems, key: { $0.id }) { post in
                         if let post = post {
                             PostRow(post: post)
                                 .contentShape(Rectangle())

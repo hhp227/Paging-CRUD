@@ -19,7 +19,7 @@ final class PostRepository {
 
     func getPostList(groupId: Int) -> AnyPublisher<PagingData<ListItem.Post>, Never> {
         return Pager(
-            PagingConfig(pageSize: Self.loadSize, enablePlaceholders: false, initialLoadSize: Self.loadSize),
+            PagingConfig(pageSize: Self.loadSize, enablePlaceholders: false),
             nil,
             PostRemoteMediator(postService: postService, postDao: localDataSource, groupId: groupId)
         ) {
