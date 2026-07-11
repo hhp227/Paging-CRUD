@@ -596,7 +596,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hhp227/Jetpack-Paging-for-SwiftUI.git";
 			requirement = {
-				branch = main;
+				branch = develop;
 				kind = branch;
 			};
 		};

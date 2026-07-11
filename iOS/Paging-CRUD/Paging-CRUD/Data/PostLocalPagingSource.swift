@@ -47,6 +47,8 @@ final class PostLocalPagingSource: PagingSource<Int, ListItem.Post> {
             end = min(count, params.getKey() ?? params.loadSize)
         }
         let data = postDao.getPostList(groupId, offset, end)
+
+        print("[Paging][App] source \(type(of: params)) key=\(String(describing: params.getKey())) range=\(offset)..<\(end) daoCount=\(count) -> \(data.count) items ids=\(data.map { $0.id })")
         return LoadResult<Int, ListItem.Post>.Page(
             data: data,
             prevKey: nil,

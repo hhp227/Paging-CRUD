@@ -38,6 +38,7 @@ final class PostRemoteMediator: RemoteMediator<Int, ListItem.Post> {
             if !response.error {
                 let data = response.data ?? []
 
+                print("[Paging][App] mediator \(loadType) offset=\(offset) fetched=\(data.count) ids=\(data.map { $0.id }) daoCountBefore=\(postDao.getCount(groupId))")
                 if loadType == .refresh {
                     postDao.replaceAll(groupId, data)
                 } else {
