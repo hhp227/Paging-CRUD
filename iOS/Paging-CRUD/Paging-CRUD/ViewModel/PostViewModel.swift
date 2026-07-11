@@ -26,7 +26,6 @@ final class PostViewModel: ObservableObject {
                 switch result {
                 case .success:
                     state.isLoading = false
-                    state.deletedPostIds.insert(post.id)
                 case .error(let message, _):
                     state.isLoading = false
                     state.message = message
@@ -37,10 +36,6 @@ final class PostViewModel: ObservableObject {
         }
     }
 
-    func refresh() {
-        repository.clearCache(groupId: Self.groupId)
-    }
-
     func onMessageShown() {
         state.message = ""
     }
@@ -49,7 +44,6 @@ final class PostViewModel: ObservableObject {
 
     struct State {
         var isLoading = false
-        var deletedPostIds = Set<Int>()
         var message = ""
     }
 }

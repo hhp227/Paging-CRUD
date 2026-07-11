@@ -29,7 +29,7 @@ struct ContentView: View {
             ZStack(alignment: .bottomTrailing) {
                 List {
                     ForEach(lazyPagingItems) { post in
-                        if let post = post, !viewModel.state.deletedPostIds.contains(post.id) {
+                        if let post = post {
                             PostRow(post: post)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
@@ -61,6 +61,10 @@ struct ContentView: View {
                 } message: { _ in
                     Text("이 게시글을 삭제하시겠습니까?")
                 }
+                if lazyPagingItems.loadState.refresh is LoadState.NotLoading && lazyPagingItems.itemCount == 0 {
+                    Text("게시물이 없습니다.")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
                 if lazyPagingItems.loadState.refresh is LoadState.Error {
                     VStack(spacing: 8) {
                         Text("불러오기에 실패했습니다.")
@@ -91,7 +95,6 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        viewModel.refresh()
                         lazyPagingItems.refresh()
                     } label: {
                         Image(systemName: "arrow.clockwise")
@@ -111,7 +114,6 @@ struct ContentView: View {
             }
             .sheet(isPresented: $isCreatePresented) {
                 CreateView {
-                    viewModel.refresh()
                     lazyPagingItems.refresh()
                 }
             }

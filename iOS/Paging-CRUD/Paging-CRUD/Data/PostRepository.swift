@@ -18,8 +18,12 @@ final class PostRepository {
     }
 
     func getPostList(groupId: Int) -> AnyPublisher<PagingData<ListItem.Post>, Never> {
-        return Pager(PagingConfig(pageSize: Self.loadSize, enablePlaceholders: false, initialLoadSize: Self.loadSize)) {
-            PostPagingSource(postService: self.postService, postDao: self.localDataSource, groupId: groupId)
+        return Pager(
+            PagingConfig(pageSize: Self.loadSize, enablePlaceholders: false, initialLoadSize: Self.loadSize),
+            nil,
+            PostRemoteMediator(postService: postService, postDao: localDataSource, groupId: groupId)
+        ) {
+            PostLocalPagingSource(postDao: self.localDataSource, groupId: groupId)
         }.publisher
     }
 
@@ -62,10 +66,6 @@ final class PostRepository {
                 continuation.finish()
             }
         }
-    }
-
-    func clearCache(groupId: Int) {
-        localDataSource.deleteAll(groupId)
     }
 
     static let loadSize = 10
