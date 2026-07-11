@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Refresh
@@ -41,26 +40,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.hhp227.paging_crud.model.ListItem
 import com.hhp227.paging_crud.ui.theme.PagingCRUDTheme
 import com.hhp227.paging_crud.util.InjectorUtils
 import com.hhp227.paging_crud.viewmodel.PostViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
     viewModel: PostViewModel = viewModel(factory = InjectorUtils.providePostViewModelFactory()),
+    refreshRequested: Boolean = false,
+    onRefreshHandled: () -> Unit = {},
     onNavigateToCreate: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val pagingDataFlow: Flow<PagingData<ListItem.Post>> = remember(viewModel) {
+        viewModel.state.map { it.pagingData }.distinctUntilChanged()
+    }
+    val lazyPagingItems = pagingDataFlow.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
     var selectedPost by remember { mutableStateOf<ListItem.Post?>(null) }
 
+    LaunchedEffect(refreshRequested) {
+        if (refreshRequested) {
+            viewModel.refresh()
+            lazyPagingItems.refresh()
+            onRefreshHandled()
+        }
+    }
     LaunchedEffect(state.message) {
         if (state.message.isNotEmpty()) {
             snackbarHostState.showSnackbar(state.message)
             viewModel.onMessageShown()
+        }
+    }
+    LaunchedEffect(lazyPagingItems.loadState.refresh) {
+        (lazyPagingItems.loadState.refresh as? LoadState.Error)?.also {
+            snackbarHostState.showSnackbar(it.error.message ?: "An unexpected error occured")
         }
     }
     Scaffold(
@@ -69,7 +92,12 @@ fun ContentScreen(
             TopAppBar(
                 title = { Text(text = "Paging CRUD") },
                 actions = {
-                    IconButton(onClick = viewModel::refresh) {
+                    IconButton(
+                        onClick = {
+                            viewModel.refresh()
+                            lazyPagingItems.refresh()
+                        }
+                    ) {
                         Icon(imageVector = Icons.Filled.Refresh, contentDescription = "새로고침")
                     }
                 }
@@ -84,19 +112,35 @@ fun ContentScreen(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(items = state.itemList, key = ListItem.Post::id) { post ->
-                    PostItem(post = post, onClick = { selectedPost = post })
-                    HorizontalDivider()
+                items(count = lazyPagingItems.itemCount) { index ->
+                    val post = lazyPagingItems[index]
+
+                    if (post != null) {
+                        PostItem(post = post, onClick = { selectedPost = post })
+                        HorizontalDivider()
+                    }
+                }
+                if (lazyPagingItems.loadState.append is LoadState.Loading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
             }
-            if (!state.isLoading && state.itemList.isEmpty()) {
+            if (lazyPagingItems.loadState.refresh is LoadState.NotLoading && lazyPagingItems.itemCount == 0) {
                 Text(
                     text = "게시물이 없습니다.",
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-            if (state.isLoading) {
+            if (lazyPagingItems.loadState.refresh is LoadState.Loading || state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }

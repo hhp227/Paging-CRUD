@@ -4,34 +4,20 @@
 //
 
 import Foundation
+import Combine
+import Paging
 
 @MainActor
 final class PostViewModel: ObservableObject {
     @Published var state = State()
 
+    let pagingData: AnyPublisher<PagingData<ListItem.Post>, Never>
+
     private let repository: PostRepository
 
     init(repository: PostRepository = .shared) {
         self.repository = repository
-
-        fetchPostList()
-    }
-
-    private func fetchPostList() {
-        Task {
-            for await result in repository.getPostList(groupId: Self.groupId, offset: 0) {
-                switch result {
-                case .success(let data):
-                    state.isLoading = false
-                    state.itemList = data
-                case .error(let message, _):
-                    state.isLoading = false
-                    state.message = message
-                case .loading:
-                    state.isLoading = true
-                }
-            }
-        }
+        self.pagingData = repository.getPostList(groupId: Self.groupId).cachedIn()
     }
 
     func onDeletePost(_ post: ListItem.Post) {
@@ -40,7 +26,7 @@ final class PostViewModel: ObservableObject {
                 switch result {
                 case .success:
                     state.isLoading = false
-                    state.itemList.removeAll { $0.id == post.id }
+                    state.deletedPostIds.insert(post.id)
                 case .error(let message, _):
                     state.isLoading = false
                     state.message = message
@@ -52,7 +38,7 @@ final class PostViewModel: ObservableObject {
     }
 
     func refresh() {
-        fetchPostList()
+        repository.clearCache(groupId: Self.groupId)
     }
 
     func onMessageShown() {
@@ -63,7 +49,7 @@ final class PostViewModel: ObservableObject {
 
     struct State {
         var isLoading = false
-        var itemList: [ListItem.Post] = []
+        var deletedPostIds = Set<Int>()
         var message = ""
     }
 }

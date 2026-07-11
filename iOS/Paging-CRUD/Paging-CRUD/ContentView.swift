@@ -6,23 +6,44 @@
 //
 
 import SwiftUI
+import Paging
 
 struct ContentView: View {
-    @StateObject private var viewModel = PostViewModel()
+    @StateObject private var viewModel: PostViewModel
+
+    @StateObject private var lazyPagingItems: LazyPagingItems<ListItem.Post>
 
     @State private var selectedPost: ListItem.Post?
 
     @State private var isCreatePresented = false
 
+    init() {
+        let viewModel = PostViewModel()
+
+        _viewModel = StateObject(wrappedValue: viewModel)
+        _lazyPagingItems = StateObject(wrappedValue: viewModel.pagingData.collectAsLazyPagingItems())
+    }
+
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
-                List(viewModel.state.itemList) { post in
-                    PostRow(post: post)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            selectedPost = post
+                List {
+                    ForEach(lazyPagingItems) { post in
+                        if let post = post, !viewModel.state.deletedPostIds.contains(post.id) {
+                            PostRow(post: post)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedPost = post
+                                }
                         }
+                    }
+                    if lazyPagingItems.loadState.append is LoadState.Loading {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
+                        }
+                    }
                 }
                 .listStyle(.plain)
                 .alert(
@@ -40,11 +61,16 @@ struct ContentView: View {
                 } message: { _ in
                     Text("이 게시글을 삭제하시겠습니까?")
                 }
-                if !viewModel.state.isLoading && viewModel.state.itemList.isEmpty {
-                    Text("게시물이 없습니다.")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                if lazyPagingItems.loadState.refresh is LoadState.Error {
+                    VStack(spacing: 8) {
+                        Text("불러오기에 실패했습니다.")
+                        Button("재시도") {
+                            lazyPagingItems.retry()
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                if viewModel.state.isLoading {
+                if lazyPagingItems.loadState.refresh is LoadState.Loading || viewModel.state.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -66,6 +92,7 @@ struct ContentView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         viewModel.refresh()
+                        lazyPagingItems.refresh()
                     } label: {
                         Image(systemName: "arrow.clockwise")
                     }
@@ -85,6 +112,7 @@ struct ContentView: View {
             .sheet(isPresented: $isCreatePresented) {
                 CreateView {
                     viewModel.refresh()
+                    lazyPagingItems.refresh()
                 }
             }
         }
