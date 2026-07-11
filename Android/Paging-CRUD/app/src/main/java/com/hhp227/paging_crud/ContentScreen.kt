@@ -70,7 +70,6 @@ fun ContentScreen(
 
     LaunchedEffect(refreshRequested) {
         if (refreshRequested) {
-            viewModel.refresh()
             lazyPagingItems.refresh()
             onRefreshHandled()
         }
@@ -93,10 +92,7 @@ fun ContentScreen(
                 title = { Text(text = "Paging CRUD") },
                 actions = {
                     IconButton(
-                        onClick = {
-                            viewModel.refresh()
-                            lazyPagingItems.refresh()
-                        }
+                        onClick = { lazyPagingItems.refresh() }
                     ) {
                         Icon(imageVector = Icons.Filled.Refresh, contentDescription = "새로고침")
                     }

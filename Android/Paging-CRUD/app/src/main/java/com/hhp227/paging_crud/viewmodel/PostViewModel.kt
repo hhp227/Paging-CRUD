@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.filter
 import com.hhp227.paging_crud.data.PostRepository
 import com.hhp227.paging_crud.model.ListItem
 import com.hhp227.paging_crud.model.Resource
@@ -28,10 +27,7 @@ class PostViewModel internal constructor(
             .onEach { result ->
                 when (result) {
                     is Resource.Success -> {
-                        state.value = state.value.copy(
-                            isLoading = false,
-                            pagingData = state.value.pagingData.filter { it.id != post.id }
-                        )
+                        state.value = state.value.copy(isLoading = false)
                     }
                     is Resource.Error -> {
                         state.value = state.value.copy(
@@ -45,10 +41,6 @@ class PostViewModel internal constructor(
                 }
             }
             .launchIn(viewModelScope)
-    }
-
-    fun refresh() {
-        repository.clearCache(GROUP_ID)
     }
 
     fun onMessageShown() {

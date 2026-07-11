@@ -2,40 +2,57 @@ package com.hhp227.paging_crud.data
 
 import com.hhp227.paging_crud.model.ListItem
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
-// Post Caching
+// Post Caching (Single Source of Truth)
 object PostDao {
     private val cachedMap = ConcurrentHashMap<Int, MutableList<ListItem.Post>>()
 
-    private val countMap = ConcurrentHashMap<Int, Int>()
+    private val invalidationListeners = CopyOnWriteArrayList<() -> Unit>()
+
+    fun addInvalidationListener(listener: () -> Unit) {
+        invalidationListeners += listener
+    }
+
+    fun removeInvalidationListener(listener: () -> Unit) {
+        invalidationListeners -= listener
+    }
+
+    private fun notifyInvalidated() {
+        invalidationListeners.forEach { it() }
+    }
 
     fun insertAll(key: Int, list: List<ListItem.Post>) {
-        countMap[key] = 0
         cachedMap.computeIfAbsent(key) { mutableListOf() }.addAll(list)
+        notifyInvalidated()
+    }
+
+    fun replaceAll(key: Int, list: List<ListItem.Post>) {
+        cachedMap.compute(key) { _, _ -> list.toMutableList() }
+        notifyInvalidated()
     }
 
     fun getPostList(key: Int, start: Int, end: Int): List<ListItem.Post> {
         return cachedMap[key]?.let { list ->
-            list.slice(start until if (end < list.size) end else list.size)
+            if (start >= list.size) emptyList()
+            else list.slice(start until if (end < list.size) end else list.size)
         } ?: emptyList()
     }
 
     fun deletePost(postId: Int) {
-        val key = cachedMap.entries.find { it.value.find { it.id == postId } != null }?.key ?: -1
-        val index = cachedMap[key]?.indexOfFirst { it.id == postId } ?: -1
+        val key = cachedMap.entries.find { entry -> entry.value.any { it.id == postId } }?.key ?: return
 
-        countMap.computeIfPresent(key) { _, v -> v - 1 }
-        if (index > -1) {
-            cachedMap[key]?.removeAt(index)
+        if (cachedMap[key]?.removeAll { it.id == postId } == true) {
+            notifyInvalidated()
         }
     }
 
     fun deleteAll(key: Int) {
-        countMap[key] = 0
         cachedMap[key]?.clear()
+        notifyInvalidated()
     }
 
     fun isCacheEmpty(key: Int) = cachedMap.getOrDefault(key, emptyList()).isEmpty()
 
-    fun getCount(key: Int) = countMap[key] ?: 0
+    fun getCount(key: Int) = cachedMap[key]?.size ?: 0
 }

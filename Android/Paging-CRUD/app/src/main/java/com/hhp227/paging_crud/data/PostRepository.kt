@@ -1,5 +1,6 @@
 package com.hhp227.paging_crud.data
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -14,10 +15,12 @@ class PostRepository(
     private val postService: PostService,
     private val localDataSource: PostDao
 ) {
+    @OptIn(ExperimentalPagingApi::class)
     fun getPostList(groupId: Int): Flow<PagingData<ListItem.Post>> {
         return Pager(
-            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE),
-            pagingSourceFactory = { PostPagingSource(postService, localDataSource, groupId) },
+            config = PagingConfig(enablePlaceholders = false, pageSize = LOAD_SIZE, initialLoadSize = LOAD_SIZE),
+            remoteMediator = PostRemoteMediator(postService, localDataSource, groupId),
+            pagingSourceFactory = { PostLocalPagingSource(localDataSource, groupId) },
         ).flow
     }
 
@@ -52,10 +55,6 @@ class PostRepository(
         }
     }
         .onStart { emit(Resource.Loading()) }
-
-    fun clearCache(groupId: Int) {
-        localDataSource.deleteAll(groupId)
-    }
 
     companion object {
         const val LOAD_SIZE = 10
