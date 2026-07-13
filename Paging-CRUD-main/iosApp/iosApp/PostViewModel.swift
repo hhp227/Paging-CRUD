@@ -11,31 +11,35 @@ final class PostViewModel: ObservableObject {
 
     // LazyPagingItems는 ObservableObject라서 ViewModel 프로퍼티로 중첩하면 View가 변경을
     // 관찰하지 못한다. ViewModel은 브리지만 노출하고 View가
-    // pagingData.collectAsLazyPagingItems()를 @StateObject로 직접 든다 (pure-Swift 모드와 동일한 표면)
+    // pagingData.collectAsLazyPagingItems()를 @StateObject로 직접 든다
     let pagingData: SwiftUiPagingBridge<ListItem.Post>
 
-    private let removePostBridge: RemovePostBridge
+    private let removePostUseCase: RemovePostUseCase
+
+    private let viewModelScope = ViewModelScope()
 
     init(
         getPostListUseCase: GetPostListUseCase = InjectorUtils.shared.provideGetPostListUseCase(),
         removePostUseCase: RemovePostUseCase = InjectorUtils.shared.provideRemovePostUseCase()
     ) {
-        self.pagingData = getPostListUseCase.asBridge(groupId: Self.groupId)
-        self.removePostBridge = RemovePostBridge(removePostUseCase: removePostUseCase)
+        self.removePostUseCase = removePostUseCase
+        self.pagingData = getPostListUseCase(groupId: Self.GROUP_ID).cachedIn(viewModelScope)
     }
 
     func onDeletePost(_ post: ListItem.Post) {
-        removePostBridge.removePost(postId: post.id) { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-
-                self.state.isLoading = result.isLoading
-
-                if let message = result.errorMessage {
-                    self.state.message = message
+        removePostUseCase(apiKey: URLs.API_KEY, postId: post.id)
+            .onEach { [weak self] result in
+                switch result {
+                case .success:
+                    self?.state.isLoading = false
+                case .error(let message, _):
+                    self?.state.isLoading = false
+                    self?.state.message = message
+                case .loading:
+                    self?.state.isLoading = true
                 }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     func onMessageShown() {
@@ -43,10 +47,10 @@ final class PostViewModel: ObservableObject {
     }
 
     deinit {
-        removePostBridge.dispose()
+        viewModelScope.cancel()
     }
 
-    private static let groupId: Int32 = 0
+    private static let GROUP_ID: Int32 = 0
 
     struct State {
         var isLoading = false

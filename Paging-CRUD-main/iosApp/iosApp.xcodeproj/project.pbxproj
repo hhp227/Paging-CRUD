@@ -14,6 +14,7 @@
 		A1010008AABBCCDDEEFF0008 /* CreatePostViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1011009AABBCCDDEEFF0009 /* CreatePostViewModel.swift */; };
 		A1010009AABBCCDDEEFF0009 /* KmpPagingBridgeAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A101100AAABBCCDDEEFF000A /* KmpPagingBridgeAdapter.swift */; };
 		A101000AAABBCCDDEEFF000A /* Paging in Frameworks */ = {isa = PBXBuildFile; productRef = A1014001AABBCCDDEEFF4001 /* Paging */; };
+		A101000BAABBCCDDEEFF000B /* KmpInterop.swift in Sources */ = {isa = PBXBuildFile; fileRef = A101100BAABBCCDDEEFF000B /* KmpInterop.swift */; };
 		A1010004AABBCCDDEEFF0004 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1011004AABBCCDDEEFF0004 /* Assets.xcassets */; };
 		A1010005AABBCCDDEEFF0005 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1011005AABBCCDDEEFF0005 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 		A1011008AABBCCDDEEFF0008 /* PostViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostViewModel.swift; sourceTree = "<group>"; };
 		A1011009AABBCCDDEEFF0009 /* CreatePostViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostViewModel.swift; sourceTree = "<group>"; };
 		A101100AAABBCCDDEEFF000A /* KmpPagingBridgeAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KmpPagingBridgeAdapter.swift; sourceTree = "<group>"; };
+		A101100BAABBCCDDEEFF000B /* KmpInterop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KmpInterop.swift; sourceTree = "<group>"; };
 		A1011004AABBCCDDEEFF0004 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1011005AABBCCDDEEFF0005 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A1011006AABBCCDDEEFF0006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 				A1011008AABBCCDDEEFF0008 /* PostViewModel.swift */,
 				A1011009AABBCCDDEEFF0009 /* CreatePostViewModel.swift */,
 				A101100AAABBCCDDEEFF000A /* KmpPagingBridgeAdapter.swift */,
+				A101100BAABBCCDDEEFF000B /* KmpInterop.swift */,
 				A1011004AABBCCDDEEFF0004 /* Assets.xcassets */,
 				A1011006AABBCCDDEEFF0006 /* Info.plist */,
 				A1012000AABBCCDDEEFF0000 /* Preview Content */,
@@ -198,6 +201,7 @@
 				A1010007AABBCCDDEEFF0007 /* PostViewModel.swift in Sources */,
 				A1010008AABBCCDDEEFF0008 /* CreatePostViewModel.swift in Sources */,
 				A1010009AABBCCDDEEFF0009 /* KmpPagingBridgeAdapter.swift in Sources */,
+				A101000BAABBCCDDEEFF000B /* KmpInterop.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

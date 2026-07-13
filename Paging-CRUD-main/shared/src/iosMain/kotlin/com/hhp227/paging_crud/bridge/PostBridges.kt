@@ -6,7 +6,6 @@ import com.hhp227.paging_crud.domain.GetPostListUseCase
 import com.hhp227.paging_crud.domain.RemovePostUseCase
 import com.hhp227.paging_crud.model.ListItem
 import com.hhp227.paging_crud.model.Resource
-import com.hhp227.paging_crud.util.URLs
 import io.github.hhp227.paging.swiftui.SwiftUiPagingBridge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,19 +14,27 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
- * iOS(SwiftUI) 쪽 페이징 진입점 (docs/KMP.md의 계층 배치).
- * UseCase는 cachedIn 없는 Flow<PagingData>를 반환하고, Swift ViewModel에는 Kotlin
- * scope가 없으므로 이 경계에서 브리지가 scope를 소유하며 cachedIn을 적용한다
- * (Android는 ViewModel의 viewModelScope에서 적용). scope의 수명은 Swift 어댑터의
- * deinit → dispose()가 정리한다.
+ * androidx viewModelScope의 iOS 대응물. Swift ViewModel이 프로퍼티로 소유하고
+ * deinit에서 [cancel]을 호출한다 — Kotlin ViewModel의 onCleared와 같은 역할.
+ * 이 스코프에 cachedIn 캐시와 CRUD Flow 수집이 모두 묶인다.
  */
-fun GetPostListUseCase.asBridge(groupId: Int): SwiftUiPagingBridge<ListItem.Post> {
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+class ViewModelScope {
+    internal val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    return SwiftUiPagingBridge(invoke(groupId).cachedIn(scope), scope)
+    fun cancel() {
+        coroutineScope.cancel()
+    }
 }
 
-/** 게시글 작성/삭제 결과를 ObjC 경계 너머로 옮기기 위한 평탄화 표현 */
+/**
+ * Compose ViewModel의 `getPostListUseCase(GROUP_ID).cachedIn(viewModelScope)`와
+ * 동일한 호출 패턴을 만들기 위한 확장. Swift 쪽 callAsFunction/PostPagingFlow 셔거와
+ * 조합되어 `getPostListUseCase(groupId:).cachedIn(viewModelScope)`로 읽힌다.
+ */
+fun GetPostListUseCase.cachedIn(groupId: Int, scope: ViewModelScope): SwiftUiPagingBridge<ListItem.Post> =
+    SwiftUiPagingBridge(invoke(groupId).cachedIn(scope.coroutineScope), scope.coroutineScope)
+
+/** 게시글 작성/삭제 결과를 ObjC 경계 너머로 옮기기 위한 평탄화 표현 (Swift에서 Resource enum으로 복원) */
 class PostOpResult(
     val isLoading: Boolean,
     val errorMessage: String?,
@@ -35,42 +42,35 @@ class PostOpResult(
     val postId: Int
 )
 
-/** AddPostUseCase를 Swift 콜백으로 노출하는 브리지. 콜백은 메인 디스패처에서 호출된다 */
-class AddPostBridge(
-    private val addPostUseCase: AddPostUseCase,
-    private val groupId: Int
+/**
+ * Kotlin의 `.onEach { }.launchIn(viewModelScope)` 패턴을 Swift에서 재현하기 위한
+ * 수집 진입점. Swift 쪽 ResourceFlow 셔거가 launchIn 시점에 호출한다.
+ * 콜백은 메인 디스패처에서 호출된다.
+ */
+fun AddPostUseCase.collectIn(
+    scope: ViewModelScope,
+    apiKey: String,
+    groupId: Int,
+    text: String,
+    onEach: (PostOpResult) -> Unit
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
-    fun addPost(text: String, onEach: (PostOpResult) -> Unit) {
-        scope.launch {
-            addPostUseCase(URLs.API_KEY, groupId, text).collect { result ->
-                onEach(result.toOpResult { it ?: -1 })
-            }
+    scope.coroutineScope.launch {
+        invoke(apiKey, groupId, text).collect { result ->
+            onEach(result.toOpResult { it ?: -1 })
         }
-    }
-
-    fun dispose() {
-        scope.cancel()
     }
 }
 
-/** RemovePostUseCase를 Swift 콜백으로 노출하는 브리지. 콜백은 메인 디스패처에서 호출된다 */
-class RemovePostBridge(
-    private val removePostUseCase: RemovePostUseCase
+fun RemovePostUseCase.collectIn(
+    scope: ViewModelScope,
+    apiKey: String,
+    postId: Int,
+    onEach: (PostOpResult) -> Unit
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-
-    fun removePost(postId: Int, onEach: (PostOpResult) -> Unit) {
-        scope.launch {
-            removePostUseCase(URLs.API_KEY, postId).collect { result ->
-                onEach(result.toOpResult { -1 })
-            }
+    scope.coroutineScope.launch {
+        invoke(apiKey, postId).collect { result ->
+            onEach(result.toOpResult { -1 })
         }
-    }
-
-    fun dispose() {
-        scope.cancel()
     }
 }
 

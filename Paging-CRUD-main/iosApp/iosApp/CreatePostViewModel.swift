@@ -9,27 +9,32 @@ import Shared
 final class CreatePostViewModel: ObservableObject {
     @Published var state = State()
 
-    private let addPostBridge: AddPostBridge
+    private let addPostUseCase: AddPostUseCase
+
+    private let viewModelScope = ViewModelScope()
 
     init(addPostUseCase: AddPostUseCase = InjectorUtils.shared.provideAddPostUseCase()) {
-        self.addPostBridge = AddPostBridge(addPostUseCase: addPostUseCase, groupId: Self.groupId)
+        self.addPostUseCase = addPostUseCase
     }
 
     private func insertPost(text: String) {
-        addPostBridge.addPost(text: text) { [weak self] result in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-
-                self.state.textError = nil
-                self.state.isLoading = result.isLoading
-
-                if let message = result.errorMessage {
-                    self.state.message = message
-                } else if !result.isLoading {
-                    self.state.postId = Int(result.postId)
+        addPostUseCase(apiKey: URLs.API_KEY, groupId: Self.GROUP_ID, text: text)
+            .onEach { [weak self] result in
+                switch result {
+                case .success(let data):
+                    self?.state.textError = nil
+                    self?.state.isLoading = false
+                    self?.state.postId = data
+                case .error(let message, _):
+                    self?.state.textError = nil
+                    self?.state.isLoading = false
+                    self?.state.message = message
+                case .loading:
+                    self?.state.textError = nil
+                    self?.state.isLoading = true
                 }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     func actionSend() {
@@ -45,10 +50,10 @@ final class CreatePostViewModel: ObservableObject {
     }
 
     deinit {
-        addPostBridge.dispose()
+        viewModelScope.cancel()
     }
 
-    private static let groupId: Int32 = 0
+    private static let GROUP_ID: Int32 = 0
 
     struct State {
         var text = ""
