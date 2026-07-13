@@ -12,11 +12,6 @@ import Combine
 import Foundation
 import Shared
 
-// ObjC 내보내기는 shared 모듈이 아닌 의존성 모듈의 클래스에 모듈명 접두사를 붙인다
-// (androidx.paging:paging-common의 PagingData → Paging_commonPagingData).
-// Android와 동일한 표기(PagingData<T>)를 유지하기 위한 별칭.
-typealias PagingData<T: AnyObject> = Paging_commonPagingData<T>
-
 // shared의 URLs companion 상수를 Android와 동일한 표기(URLs.API_KEY)로 쓰기 위한 셰도잉
 enum URLs {
     static let BASE_URL = URLsCompanion.shared.BASE_URL
@@ -95,7 +90,7 @@ extension Publisher where Failure == Never, Output == PagingData<ListItem.Post> 
 }
 
 // Kotlin State 기본값 PagingData.empty()와 동일한 표기를 위한 확장
-extension Paging_commonPagingData {
+extension PagingData {
     static func empty() -> PagingData<ListItem.Post> {
         PostBridgesKt.emptyPostPagingData()
     }

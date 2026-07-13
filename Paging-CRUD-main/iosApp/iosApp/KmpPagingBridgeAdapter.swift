@@ -10,6 +10,11 @@
 import Paging
 import Shared
 
+// Shared는 androidx paging-common을 export하므로 LoadState가 SPM Paging 라이브러리와
+// 같은 이름으로 노출된다. 뷰가 참조하는 LoadState는 LazyPagingItems.loadState(Paging 쪽)
+// 타입이므로, 모듈 수준 별칭으로 Paging 쪽에 고정해 모호성을 없앤다.
+typealias LoadState = Paging.LoadState
+
 final class KmpPagingBridgeAdapter<T: AnyObject>: PagingBridgeDataSource {
     private let bridge: SwiftUiPagingBridge<T>
 
