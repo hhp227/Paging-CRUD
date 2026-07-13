@@ -54,7 +54,8 @@ final class PostViewModel: ObservableObject {
 
     struct State {
         var isLoading = false
-        var pagingData: PagingData<ListItem.Post> = .empty()
+        // Kotlin의 PagingData.empty() 대응 — ObjC 제네릭 클래스에는 static 확장을 못 붙여 브리지 함수 직접 호출
+        var pagingData: PagingData<ListItem.Post> = PostBridgesKt.emptyPostPagingData()
         var message = ""
     }
 }

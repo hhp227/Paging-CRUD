@@ -11,6 +11,9 @@
 import Combine
 import Foundation
 import Shared
+// Paging 모듈 전체를 import하면 PagingData/LoadState 등이 Shared와 겹쳐 모호해지므로,
+// 이 파일에 필요한 LazyPagingItems만 스코프 임포트한다
+import class Paging.LazyPagingItems
 
 // shared의 URLs companion 상수를 Android와 동일한 표기(URLs.API_KEY)로 쓰기 위한 셰도잉
 enum URLs {
@@ -78,10 +81,8 @@ struct PostPagingPublisher: Publisher {
 
 // Compose의 pagingDataFlow.collectAsLazyPagingItems()와 동일한 소비 지점.
 // State에서 꺼낸 PagingData 퍼블리셔를 presenter 브리지(PagingDataSubject)로 밀어넣는다.
-// 주의: `Output == PagingData<...>` same-type 제약은 ObjC 경량 제네릭(Shared의 PagingData)과
-// 조합되면 제약 매칭이 실패할 수 있어 제약 없이 받고, 원소는 런타임 캐스팅한다
-// (ObjC 제네릭 인자는 런타임에 소거되므로 항상 성공). Paging 라이브러리의 동명 확장과는
-// 그쪽 제약(Output == Paging.PagingData<T>)이 만족되지 않아 자연스럽게 구분된다.
+// Output 제약 없이 받고 원소를 런타임 캐스팅한다(ObjC 제네릭 인자는 소거되므로 항상 성공).
+// Paging 라이브러리의 동명 확장(Output == Paging.PagingData<T> 요구)과는 제약 불일치로 구분된다.
 extension Publisher where Failure == Never {
     func collectAsLazyPagingItems() -> LazyPagingItems<ListItem.Post> {
         let subject = PagingDataSubject<ListItem.Post>()
@@ -90,13 +91,6 @@ extension Publisher where Failure == Never {
 
         adapter.retained = sink { subject.send(pagingData: $0 as! PagingData<ListItem.Post>) }
         return LazyPagingItems(bridge: adapter)
-    }
-}
-
-// Kotlin State 기본값 PagingData.empty()와 동일한 표기를 위한 확장
-extension PagingData {
-    static func empty() -> PagingData<ListItem.Post> {
-        PostBridgesKt.emptyPostPagingData()
     }
 }
 
