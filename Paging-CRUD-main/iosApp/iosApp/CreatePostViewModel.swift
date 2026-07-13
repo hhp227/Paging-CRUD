@@ -3,6 +3,7 @@
 //  iosApp
 //
 
+import Combine
 import Foundation
 import Shared
 
@@ -11,7 +12,7 @@ final class CreatePostViewModel: ObservableObject {
 
     private let addPostUseCase: AddPostUseCase
 
-    private let viewModelScope = ViewModelScope()
+    private var cancellables = Set<AnyCancellable>()
 
     init(addPostUseCase: AddPostUseCase = InjectorUtils.shared.provideAddPostUseCase()) {
         self.addPostUseCase = addPostUseCase
@@ -19,7 +20,7 @@ final class CreatePostViewModel: ObservableObject {
 
     private func insertPost(text: String) {
         addPostUseCase(apiKey: URLs.API_KEY, groupId: Self.GROUP_ID, text: text)
-            .onEach { [weak self] result in
+            .sink { [weak self] result in
                 switch result {
                 case .success(let data):
                     self?.state.textError = nil
@@ -34,7 +35,12 @@ final class CreatePostViewModel: ObservableObject {
                     self?.state.isLoading = true
                 }
             }
-            .launchIn(viewModelScope)
+            .store(in: &cancellables)
+    }
+
+    func onTextChange(_ text: String) {
+        state.text = text
+        state.textError = nil
     }
 
     func actionSend() {
@@ -47,10 +53,6 @@ final class CreatePostViewModel: ObservableObject {
 
     func onMessageShown() {
         state.message = ""
-    }
-
-    deinit {
-        viewModelScope.cancel()
     }
 
     private static let GROUP_ID: Int32 = 0

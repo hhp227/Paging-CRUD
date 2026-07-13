@@ -18,9 +18,12 @@ struct ContentView: View {
 
     init() {
         let viewModel = PostViewModel()
+        // Compose와 동일: state에서 pagingData만 뽑아낸 스트림을 collectAsLazyPagingItems로 수집
+        // (Kotlin: viewModel.state.map { it.pagingData }.distinctUntilChanged())
+        let pagingDataPublisher = viewModel.$state.map { $0.pagingData }.removeDuplicates { $0 === $1 }
 
         _viewModel = StateObject(wrappedValue: viewModel)
-        _lazyPagingItems = StateObject(wrappedValue: viewModel.pagingData.collectAsLazyPagingItems())
+        _lazyPagingItems = StateObject(wrappedValue: pagingDataPublisher.collectAsLazyPagingItems())
     }
 
     var body: some View {

@@ -19,8 +19,9 @@ UI 소비만 플랫폼별 라이브러리를 쓴다:
     `AddPostUseCase` + `RemovePostUseCase` — 캐시는 각 플랫폼 프레젠테이션 경계에서 적용
     (Android는 ViewModel `cachedIn(viewModelScope)`, iOS는 `asBridge()` 내부)
   - `iosMain`: `SwiftUiPagingBridge` 벤더링(라이브러리 kmp-module 브랜치 출처) +
-    `ViewModelScope`/`cachedIn`/`collectIn` (Swift 진입점 — 앱의 KmpInterop.swift와 조합되어
-    Compose ViewModel과 동일한 호출 패턴을 만든다)
+    Flow ↔ Combine 대응 핸들(`FlowAdapter`/`PostPagingFlowAdapter`/`PagingDataSubject`) —
+    앱의 KmpInterop.swift가 이를 Combine Publisher로 감싸서 SwiftUI ViewModel이
+    Compose ViewModel과 1:1 코드 패턴(State.pagingData, sink/store ↔ onEach/launchIn)을 갖는다
 * [/composeApp](./composeApp/src) — Android 앱 (androidMain 전용, Compose + Paging3)
 * [/iosApp](./iosApp/iosApp) — iOS 앱 (SwiftUI, SPM으로 Paging 라이브러리 사용)
 

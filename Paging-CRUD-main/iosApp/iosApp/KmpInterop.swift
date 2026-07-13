@@ -2,17 +2,17 @@
 //  KmpInterop.swift
 //  iosApp
 //
-//  shared(Kotlin)의 UseCase/Flow를 Compose ViewModel과 동일한 호출 패턴으로 쓰기 위한 셔거.
-//  목표 표면 (Kotlin ↔ Swift):
-//    getPostListUseCase(GROUP_ID).cachedIn(viewModelScope)
-//    removePostUseCase(URLs.API_KEY, post.id).onEach { ... }.launchIn(viewModelScope)
+//  Kotlin Flow ↔ Combine Publisher 대응.
+//  UseCase 호출은 Combine Publisher를 반환하고, ViewModel은 표준 Combine
+//  (.sink / .store(in: &cancellables))으로 소비한다 — Kotlin의
+//  .onEach { }.launchIn(viewModelScope)에 해당하는 Combine 관용구.
 //
 
+import Combine
 import Foundation
 import Shared
 
-// shared의 URLs companion 상수를 Android 코드와 동일한 표기(URLs.API_KEY)로 쓰기 위한 셰도잉.
-// (Shared 모듈의 URLs 프로토콜을 앱 모듈 선언이 가린다)
+// shared의 URLs companion 상수를 Android와 동일한 표기(URLs.API_KEY)로 쓰기 위한 셰도잉
 enum URLs {
     static let BASE_URL = URLsCompanion.shared.BASE_URL
 
@@ -26,65 +26,115 @@ enum Resource<T> {
     case loading(T? = nil)
 }
 
-// Kotlin의 Flow<Resource<T>>.onEach { }.launchIn(viewModelScope) 패턴 대응.
-// 콜드 플로우처럼 launchIn 호출 시점에 shared 쪽 수집이 시작된다
-struct ResourceFlow<T> {
-    private let collect: (ViewModelScope, @escaping (Resource<T>) -> Void) -> Void
-
-    private var action: ((Resource<T>) -> Void)?
-
-    init(_ collect: @escaping (ViewModelScope, @escaping (Resource<T>) -> Void) -> Void) {
-        self.collect = collect
-    }
-
-    func onEach(_ action: @escaping (Resource<T>) -> Void) -> ResourceFlow<T> {
-        var flow = self
-        flow.action = action
-        return flow
-    }
-
-    func launchIn(_ scope: ViewModelScope) {
-        let action = self.action
-        collect(scope) { action?($0) }
-    }
-}
-
-// Kotlin의 getPostListUseCase(GROUP_ID) 반환값(Flow<PagingData>) 대응.
-// cachedIn(viewModelScope)이 shared 쪽 cachedIn + 브리지 생성으로 이어진다
-struct PostPagingFlow {
-    fileprivate let useCase: GetPostListUseCase
-
-    fileprivate let groupId: Int32
-
-    func cachedIn(_ scope: ViewModelScope) -> SwiftUiPagingBridge<ListItem.Post> {
-        useCase.cachedIn(groupId: groupId, scope: scope)
-    }
-}
-
-// Kotlin operator fun invoke와 동일한 호출 형태를 만드는 callAsFunction 셔거
+// Kotlin: getPostListUseCase(GROUP_ID) → Flow<PagingData<Post>>
 extension GetPostListUseCase {
-    func callAsFunction(groupId: Int32) -> PostPagingFlow {
-        PostPagingFlow(useCase: self, groupId: groupId)
+    func callAsFunction(groupId: Int32) -> PostPagingPublisher {
+        PostPagingPublisher(adapter: pagingFlow(groupId: groupId))
     }
 }
 
+// Kotlin: addPostUseCase(URLs.API_KEY, GROUP_ID, text) → Flow<Resource<Int>>
 extension AddPostUseCase {
-    func callAsFunction(apiKey: String, groupId: Int32, text: String) -> ResourceFlow<Int> {
-        ResourceFlow { scope, onEach in
-            collectIn(scope: scope, apiKey: apiKey, groupId: groupId, text: text) { result in
-                onEach(result.toResource { Int($0.postId) })
-            }
+    func callAsFunction(apiKey: String, groupId: Int32, text: String) -> AnyPublisher<Resource<Int>, Never> {
+        KotlinFlowPublisher<PostOpResult> { onEach in
+            self.opFlow(apiKey: apiKey, groupId: groupId, text: text).subscribe(onEach: onEach)
         }
+        .map { $0.toResource { Int($0.postId) } }
+        .eraseToAnyPublisher()
     }
 }
 
+// Kotlin: removePostUseCase(URLs.API_KEY, postId) → Flow<Resource<Boolean>>
 extension RemovePostUseCase {
-    func callAsFunction(apiKey: String, postId: Int32) -> ResourceFlow<Bool> {
-        ResourceFlow { scope, onEach in
-            collectIn(scope: scope, apiKey: apiKey, postId: postId) { result in
-                onEach(result.toResource { _ in true })
-            }
+    func callAsFunction(apiKey: String, postId: Int32) -> AnyPublisher<Resource<Bool>, Never> {
+        KotlinFlowPublisher<PostOpResult> { onEach in
+            self.opFlow(apiKey: apiKey, postId: postId).subscribe(onEach: onEach)
         }
+        .map { $0.toResource { _ in true } }
+        .eraseToAnyPublisher()
+    }
+}
+
+// Kotlin의 Flow<PagingData<Post>> 대응 퍼블리셔.
+// cachedIn()은 cachedIn(viewModelScope) 대응 — 캐시가 구독(cancellables) 수명에 묶인다
+struct PostPagingPublisher: Publisher {
+    typealias Output = PagingData<ListItem.Post>
+
+    typealias Failure = Never
+
+    fileprivate let adapter: PostPagingFlowAdapter
+
+    func cachedIn() -> PostPagingPublisher {
+        PostPagingPublisher(adapter: adapter.cachedIn())
+    }
+
+    func receive<S>(subscriber: S) where S: Subscriber, S.Input == Output, S.Failure == Never {
+        KotlinFlowPublisher<Output> { onEach in
+            self.adapter.subscribe(onEach: onEach)
+        }
+        .receive(subscriber: subscriber)
+    }
+}
+
+// Compose의 pagingDataFlow.collectAsLazyPagingItems()와 동일한 소비 지점.
+// State에서 꺼낸 PagingData 퍼블리셔를 presenter 브리지(PagingDataSubject)로 밀어넣는다
+extension Publisher where Failure == Never, Output == PagingData<ListItem.Post> {
+    func collectAsLazyPagingItems() -> LazyPagingItems<ListItem.Post> {
+        let subject = PagingDataSubject<ListItem.Post>()
+        let bridge = unsafeDowncast(subject.bridge, to: SwiftUiPagingBridge<ListItem.Post>.self)
+        let adapter = KmpPagingBridgeAdapter(bridge)
+
+        adapter.retained = sink { subject.send(pagingData: $0) }
+        return LazyPagingItems(bridge: adapter)
+    }
+}
+
+// Kotlin State 기본값 PagingData.empty()와 동일한 표기를 위한 확장
+extension PagingData {
+    static func empty() -> PagingData<ListItem.Post> {
+        PostBridgesKt.emptyPostPagingData()
+    }
+}
+
+// Kotlin FlowAdapter(콜드 Flow)를 Combine Publisher로 감싸는 어댑터
+struct KotlinFlowPublisher<Output>: Publisher {
+    typealias Failure = Never
+
+    private let subscribe: (@escaping (Output) -> Void) -> FlowSubscription
+
+    init(_ subscribe: @escaping (@escaping (Output) -> Void) -> FlowSubscription) {
+        self.subscribe = subscribe
+    }
+
+    func receive<S>(subscriber: S) where S: Subscriber, S.Input == Output, S.Failure == Never {
+        subscriber.receive(subscription: KotlinFlowSubscription(subscribe: subscribe, subscriber: subscriber))
+    }
+}
+
+private final class KotlinFlowSubscription<S: Subscriber>: Subscription where S.Failure == Never {
+    private let subscribe: (@escaping (S.Input) -> Void) -> FlowSubscription
+
+    private var subscriber: S?
+
+    private var kotlinSubscription: FlowSubscription?
+
+    init(subscribe: @escaping (@escaping (S.Input) -> Void) -> FlowSubscription, subscriber: S) {
+        self.subscribe = subscribe
+        self.subscriber = subscriber
+    }
+
+    func request(_ demand: Subscribers.Demand) {
+        guard kotlinSubscription == nil, let subscriber = subscriber else { return }
+
+        kotlinSubscription = subscribe { value in
+            _ = subscriber.receive(value)
+        }
+    }
+
+    func cancel() {
+        kotlinSubscription?.cancel()
+        kotlinSubscription = nil
+        subscriber = nil
     }
 }
 

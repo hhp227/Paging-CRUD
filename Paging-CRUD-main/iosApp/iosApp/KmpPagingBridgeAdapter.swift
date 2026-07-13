@@ -17,6 +17,9 @@ final class KmpPagingBridgeAdapter<T: AnyObject>: PagingBridgeDataSource {
 
     var onLoadStatesUpdated: ((PagingBridgeCombinedLoadStates) -> Void)?
 
+    // 이 어댑터의 수명에 묶어야 하는 리소스 (예: State→PagingData 퍼블리셔 구독의 AnyCancellable)
+    var retained: Any?
+
     init(_ bridge: SwiftUiPagingBridge<T>) {
         self.bridge = bridge
         bridge.onPagesUpdated = { [weak self] in self?.onPagesUpdated?() }
@@ -57,14 +60,5 @@ private extension BridgeLoadState {
             errorMessage: errorMessage,
             endOfPaginationReached: endOfPaginationReached
         )
-    }
-}
-
-// Compose의 Flow<PagingData>.collectAsLazyPagingItems()와 동일한 호출 표면.
-// ObjC 제네릭 클래스 확장은 클래스의 T를 참조할 수 없으므로 메소드 제네릭으로 받고,
-// lightweight generics는 런타임에 소거되므로 캐스팅은 항상 성공한다.
-extension SwiftUiPagingBridge {
-    func collectAsLazyPagingItems<Item: AnyObject>() -> LazyPagingItems<Item> {
-        KmpPagingBridgeAdapter(self as! SwiftUiPagingBridge<Item>).collectAsLazyPagingItems()
     }
 }

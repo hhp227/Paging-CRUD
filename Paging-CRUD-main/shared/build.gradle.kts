@@ -21,6 +21,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
+            // Swift에서 PagingData<T>를 타입으로 다루기 위해 (State.pagingData가 Android와 1:1 대응)
+            export(libs.androidx.paging.common)
         }
     }
 

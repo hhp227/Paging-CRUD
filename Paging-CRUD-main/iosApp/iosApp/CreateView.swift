@@ -20,7 +20,8 @@ struct CreateView: View {
         NavigationView {
             ZStack {
                 VStack(alignment: .leading) {
-                    TextEditor(text: $viewModel.state.text)
+                    // Compose와 동일: value = state.text, onValueChange = viewModel::onTextChange
+                    TextEditor(text: Binding(get: { viewModel.state.text }, set: viewModel.onTextChange))
                         .overlay(alignment: .topLeading) {
                             if viewModel.state.text.isEmpty {
                                 Text("내용을 입력하세요.")
