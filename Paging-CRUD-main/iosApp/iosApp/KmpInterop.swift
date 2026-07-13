@@ -77,14 +77,18 @@ struct PostPagingPublisher: Publisher {
 }
 
 // Compose의 pagingDataFlow.collectAsLazyPagingItems()와 동일한 소비 지점.
-// State에서 꺼낸 PagingData 퍼블리셔를 presenter 브리지(PagingDataSubject)로 밀어넣는다
-extension Publisher where Failure == Never, Output == PagingData<ListItem.Post> {
+// State에서 꺼낸 PagingData 퍼블리셔를 presenter 브리지(PagingDataSubject)로 밀어넣는다.
+// 주의: `Output == PagingData<...>` same-type 제약은 ObjC 경량 제네릭(Shared의 PagingData)과
+// 조합되면 제약 매칭이 실패할 수 있어 제약 없이 받고, 원소는 런타임 캐스팅한다
+// (ObjC 제네릭 인자는 런타임에 소거되므로 항상 성공). Paging 라이브러리의 동명 확장과는
+// 그쪽 제약(Output == Paging.PagingData<T>)이 만족되지 않아 자연스럽게 구분된다.
+extension Publisher where Failure == Never {
     func collectAsLazyPagingItems() -> LazyPagingItems<ListItem.Post> {
         let subject = PagingDataSubject<ListItem.Post>()
         let bridge = unsafeDowncast(subject.bridge, to: SwiftUiPagingBridge<ListItem.Post>.self)
         let adapter = KmpPagingBridgeAdapter(bridge)
 
-        adapter.retained = sink { subject.send(pagingData: $0) }
+        adapter.retained = sink { subject.send(pagingData: $0 as! PagingData<ListItem.Post>) }
         return LazyPagingItems(bridge: adapter)
     }
 }
