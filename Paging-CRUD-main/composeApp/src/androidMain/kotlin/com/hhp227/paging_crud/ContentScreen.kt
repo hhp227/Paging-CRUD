@@ -56,7 +56,9 @@ import kotlinx.coroutines.flow.map
 @Composable
 fun ContentScreen(
     modifier: Modifier = Modifier,
-    viewModel: PostViewModel = viewModel { PostViewModel(InjectorUtils.getPostRepository()) },
+    viewModel: PostViewModel = viewModel {
+        PostViewModel(InjectorUtils.provideGetPostListUseCase(), InjectorUtils.provideRemovePostUseCase())
+    },
     refreshRequested: Boolean = false,
     onRefreshHandled: () -> Unit = {},
     onNavigateToCreate: () -> Unit = {}

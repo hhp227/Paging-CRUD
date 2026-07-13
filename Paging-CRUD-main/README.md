@@ -12,11 +12,14 @@ UI 소비만 플랫폼별 라이브러리를 쓴다:
 ## 구조
 
 * [/shared](./shared/src) — 공통 로직 (양 플랫폼 동일 구조의 원본은 ../Android, ../iOS 샘플)
-  - `commonMain`: `PostDao`(인메모리 SSOT) + `PostLocalPagingSource`(프리픽스 표시) +
+  - `commonMain` 데이터 계층: `PostDao`(인메모리 SSOT) + `PostLocalPagingSource`(프리픽스 표시) +
     `PostRemoteMediator`(REFRESH→replaceAll, APPEND→dao count 오프셋) + `PostRepository`,
     Ktor 기반 `PostService`
+  - `commonMain` 도메인 계층: `GetPostListUseCase`(cachedIn 없는 Flow<PagingData> 반환) +
+    `AddPostUseCase` + `RemovePostUseCase` — 캐시는 각 플랫폼 프레젠테이션 경계에서 적용
+    (Android는 ViewModel `cachedIn(viewModelScope)`, iOS는 `asBridge()` 내부)
   - `iosMain`: `SwiftUiPagingBridge` 벤더링(라이브러리 kmp-module 브랜치 출처) +
-    `postPagingBridge()`/`PostCrudBridge` (Swift 진입점)
+    `GetPostListUseCase.asBridge()`/`AddPostBridge`/`RemovePostBridge` (Swift 진입점)
 * [/composeApp](./composeApp/src) — Android 앱 (androidMain 전용, Compose + Paging3)
 * [/iosApp](./iosApp/iosApp) — iOS 앱 (SwiftUI, SPM으로 Paging 라이브러리 사용)
 

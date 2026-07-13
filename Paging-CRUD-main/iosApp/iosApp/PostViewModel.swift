@@ -10,16 +10,26 @@ import Shared
 final class PostViewModel: ObservableObject {
     @Published var state = State()
 
-    private let crudBridge = PostCrudBridge(groupId: Self.groupId)
+    private let getPostListUseCase: GetPostListUseCase
+
+    private let removePostBridge: RemovePostBridge
+
+    init(
+        getPostListUseCase: GetPostListUseCase = InjectorUtils.shared.provideGetPostListUseCase(),
+        removePostUseCase: RemovePostUseCase = InjectorUtils.shared.provideRemovePostUseCase()
+    ) {
+        self.getPostListUseCase = getPostListUseCase
+        self.removePostBridge = RemovePostBridge(removePostUseCase: removePostUseCase)
+    }
 
     // LazyPagingItems는 ObservableObject라서 ViewModel 프로퍼티로 중첩하면 View가 변경을
     // 관찰하지 못한다. ViewModel은 팩토리만 제공하고 View가 @StateObject로 직접 든다
     func makePagingItems() -> LazyPagingItems<ListItem.Post> {
-        LazyPagingItems(bridge: KmpPagingBridgeAdapter(PostBridgesKt.postPagingBridge(groupId: Self.groupId)))
+        LazyPagingItems(bridge: KmpPagingBridgeAdapter(getPostListUseCase.asBridge(groupId: Self.groupId)))
     }
 
     func onDeletePost(_ post: ListItem.Post) {
-        crudBridge.removePost(postId: post.id) { [weak self] result in
+        removePostBridge.removePost(postId: post.id) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
 
@@ -37,7 +47,7 @@ final class PostViewModel: ObservableObject {
     }
 
     deinit {
-        crudBridge.dispose()
+        removePostBridge.dispose()
     }
 
     private static let groupId: Int32 = 0

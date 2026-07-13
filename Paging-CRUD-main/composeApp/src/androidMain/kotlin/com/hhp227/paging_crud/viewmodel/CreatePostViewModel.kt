@@ -2,7 +2,7 @@ package com.hhp227.paging_crud.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hhp227.paging_crud.data.PostRepository
+import com.hhp227.paging_crud.domain.AddPostUseCase
 import com.hhp227.paging_crud.model.Resource
 import com.hhp227.paging_crud.util.URLs
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class CreatePostViewModel internal constructor(
-    private val repository: PostRepository
+    private val addPostUseCase: AddPostUseCase
 ) : ViewModel() {
     val state = MutableStateFlow(State())
 
     private fun insertPost(text: String) {
-        repository.addPost(URLs.API_KEY, GROUP_ID, text)
+        addPostUseCase(URLs.API_KEY, GROUP_ID, text)
             .onEach { result ->
                 when (result) {
                     is Resource.Success -> {

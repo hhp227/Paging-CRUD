@@ -9,10 +9,14 @@ import Shared
 final class CreatePostViewModel: ObservableObject {
     @Published var state = State()
 
-    private let crudBridge = PostCrudBridge(groupId: Self.groupId)
+    private let addPostBridge: AddPostBridge
+
+    init(addPostUseCase: AddPostUseCase = InjectorUtils.shared.provideAddPostUseCase()) {
+        self.addPostBridge = AddPostBridge(addPostUseCase: addPostUseCase, groupId: Self.groupId)
+    }
 
     private func insertPost(text: String) {
-        crudBridge.addPost(text: text) { [weak self] result in
+        addPostBridge.addPost(text: text) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
 
@@ -41,7 +45,7 @@ final class CreatePostViewModel: ObservableObject {
     }
 
     deinit {
-        crudBridge.dispose()
+        addPostBridge.dispose()
     }
 
     private static let groupId: Int32 = 0

@@ -32,7 +32,7 @@ import com.hhp227.paging_crud.viewmodel.CreatePostViewModel
 @Composable
 fun CreateScreen(
     modifier: Modifier = Modifier,
-    viewModel: CreatePostViewModel = viewModel { CreatePostViewModel(InjectorUtils.getPostRepository()) },
+    viewModel: CreatePostViewModel = viewModel { CreatePostViewModel(InjectorUtils.provideAddPostUseCase()) },
     onNavigateUp: () -> Unit = {},
     onPostCreated: () -> Unit = {}
 ) {

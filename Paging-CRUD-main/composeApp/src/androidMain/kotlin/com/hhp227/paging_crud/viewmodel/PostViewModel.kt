@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.hhp227.paging_crud.data.PostRepository
+import com.hhp227.paging_crud.domain.GetPostListUseCase
+import com.hhp227.paging_crud.domain.RemovePostUseCase
 import com.hhp227.paging_crud.model.ListItem
 import com.hhp227.paging_crud.model.Resource
 import com.hhp227.paging_crud.util.URLs
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class PostViewModel internal constructor(
-    private val repository: PostRepository
+    private val getPostListUseCase: GetPostListUseCase,
+    private val removePostUseCase: RemovePostUseCase
 ) : ViewModel() {
     val state = MutableStateFlow(State())
 
@@ -23,7 +25,7 @@ class PostViewModel internal constructor(
     }
 
     fun onDeletePost(post: ListItem.Post) {
-        repository.removePost(URLs.API_KEY, post.id)
+        removePostUseCase(URLs.API_KEY, post.id)
             .onEach { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -48,7 +50,8 @@ class PostViewModel internal constructor(
     }
 
     init {
-        repository.getPostList(GROUP_ID)
+        // UseCase는 cachedIn 없는 Flow를 반환하므로 프레젠테이션 경계인 여기서 캐시를 적용한다
+        getPostListUseCase(GROUP_ID)
             .cachedIn(viewModelScope)
             .catch { state.value = state.value.copy(message = it.message ?: "An unexpected error occured") }
             .onEach(::setPagingData)

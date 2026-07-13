@@ -3,6 +3,9 @@ package com.hhp227.paging_crud.util
 import com.hhp227.paging_crud.api.PostService
 import com.hhp227.paging_crud.data.PostDao
 import com.hhp227.paging_crud.data.PostRepository
+import com.hhp227.paging_crud.domain.AddPostUseCase
+import com.hhp227.paging_crud.domain.GetPostListUseCase
+import com.hhp227.paging_crud.domain.RemovePostUseCase
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.ContentType
@@ -10,7 +13,13 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 object InjectorUtils {
-    fun getPostRepository() = PostRepository.getInstance(PostService.create(), PostDao)
+    private fun getPostRepository() = PostRepository.getInstance(PostService.create(), PostDao)
+
+    fun provideGetPostListUseCase() = GetPostListUseCase(getPostRepository())
+
+    fun provideAddPostUseCase() = AddPostUseCase(getPostRepository())
+
+    fun provideRemovePostUseCase() = RemovePostUseCase(getPostRepository())
 
     fun provideHttpClient(): HttpClient {
         val json = Json {
