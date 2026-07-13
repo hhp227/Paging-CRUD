@@ -59,3 +59,12 @@ private extension BridgeLoadState {
         )
     }
 }
+
+// Compose의 Flow<PagingData>.collectAsLazyPagingItems()와 동일한 호출 표면.
+// ObjC 제네릭 클래스 확장은 클래스의 T를 참조할 수 없으므로 메소드 제네릭으로 받고,
+// lightweight generics는 런타임에 소거되므로 캐스팅은 항상 성공한다.
+extension SwiftUiPagingBridge {
+    func collectAsLazyPagingItems<Item: AnyObject>() -> LazyPagingItems<Item> {
+        KmpPagingBridgeAdapter(self as! SwiftUiPagingBridge<Item>).collectAsLazyPagingItems()
+    }
+}

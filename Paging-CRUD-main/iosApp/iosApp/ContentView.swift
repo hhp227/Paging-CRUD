@@ -20,7 +20,7 @@ struct ContentView: View {
         let viewModel = PostViewModel()
 
         _viewModel = StateObject(wrappedValue: viewModel)
-        _lazyPagingItems = StateObject(wrappedValue: viewModel.makePagingItems())
+        _lazyPagingItems = StateObject(wrappedValue: viewModel.pagingData.collectAsLazyPagingItems())
     }
 
     var body: some View {

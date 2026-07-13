@@ -6,8 +6,8 @@ UI 소비만 플랫폼별 라이브러리를 쓴다:
 
 - **Android**: Paging3 `paging-compose`(`collectAsLazyPagingItems`)
 - **iOS**: [Jetpack-Paging-for-SwiftUI](https://github.com/hhp227/Jetpack-Paging-for-SwiftUI)
-  (`kmp-module` 브랜치, SPM) — `SwiftUiPagingBridge` → `KmpPagingBridgeAdapter` →
-  `LazyPagingItems(bridge:)`
+  (`kmp-module` 브랜치, SPM) — `viewModel.pagingData.collectAsLazyPagingItems()`
+  (내부적으로 `SwiftUiPagingBridge` → `KmpPagingBridgeAdapter`로 어댑팅)
 
 ## 구조
 

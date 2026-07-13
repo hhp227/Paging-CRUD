@@ -4,13 +4,15 @@
 //
 
 import Foundation
-import Paging
 import Shared
 
 final class PostViewModel: ObservableObject {
     @Published var state = State()
 
-    private let getPostListUseCase: GetPostListUseCase
+    // LazyPagingItems는 ObservableObject라서 ViewModel 프로퍼티로 중첩하면 View가 변경을
+    // 관찰하지 못한다. ViewModel은 브리지만 노출하고 View가
+    // pagingData.collectAsLazyPagingItems()를 @StateObject로 직접 든다 (pure-Swift 모드와 동일한 표면)
+    let pagingData: SwiftUiPagingBridge<ListItem.Post>
 
     private let removePostBridge: RemovePostBridge
 
@@ -18,14 +20,8 @@ final class PostViewModel: ObservableObject {
         getPostListUseCase: GetPostListUseCase = InjectorUtils.shared.provideGetPostListUseCase(),
         removePostUseCase: RemovePostUseCase = InjectorUtils.shared.provideRemovePostUseCase()
     ) {
-        self.getPostListUseCase = getPostListUseCase
+        self.pagingData = getPostListUseCase.asBridge(groupId: Self.groupId)
         self.removePostBridge = RemovePostBridge(removePostUseCase: removePostUseCase)
-    }
-
-    // LazyPagingItems는 ObservableObject라서 ViewModel 프로퍼티로 중첩하면 View가 변경을
-    // 관찰하지 못한다. ViewModel은 팩토리만 제공하고 View가 @StateObject로 직접 든다
-    func makePagingItems() -> LazyPagingItems<ListItem.Post> {
-        LazyPagingItems(bridge: KmpPagingBridgeAdapter(getPostListUseCase.asBridge(groupId: Self.groupId)))
     }
 
     func onDeletePost(_ post: ListItem.Post) {
